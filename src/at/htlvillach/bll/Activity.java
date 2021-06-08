@@ -4,10 +4,12 @@ public class Activity {
     private int id;
     private int idSeason;
     private String identifier;
+    private int largestId = 0;
 
     public Activity() {}
 
-    public Activity(int idSeason, String identifier) {
+    public Activity(int id, int idSeason, String identifier) {
+        setId(id);
         this.idSeason = idSeason;
         this.identifier = identifier;
     }
@@ -25,7 +27,13 @@ public class Activity {
     }
 
     public void setId(int id) {
+        if(id > largestId)
+            largestId = id;
         this.id = id;
+    }
+
+    public void setId() {
+        this.id = largestId++;
     }
 
     public void setIdSeason(int idSeason) {
