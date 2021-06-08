@@ -1,5 +1,8 @@
 package at.htlvillach.app;
 
+import at.htlvillach.bll.Activity;
+import at.htlvillach.dal.dao.ActivityDBDao;
+import at.htlvillach.dal.dao.PersonDBDao;
 import at.htlvillach.gui.Controller;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +26,8 @@ public class Main extends Application {
         loader = new FXMLLoader(getClass().getResource("../gui/sample.fxml"));
         root = loader.load();
         controller = loader.getController();
+        controller.setActivitySet(new HashSet<>(new ActivityDBDao().getAll()));
+        controller.setPersonSet(new HashSet<>(new PersonDBDao().getAll()));
 
         primaryStage.setTitle("Activitymanager");
         primaryStage.setScene(new Scene(root));

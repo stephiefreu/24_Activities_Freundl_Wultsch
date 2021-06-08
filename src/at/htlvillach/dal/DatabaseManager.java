@@ -51,7 +51,8 @@ public class DatabaseManager {
 
     public List<Person> getAllPersons() {
         personHashMap = getPersonHashMap();
-        return (List<Person>) Map.copyOf(personHashMap);
+        Map<Integer, Person> copy = Map.copyOf(personHashMap);
+        return new ArrayList<>(copy.values());
     }
 
     public HashMap<Integer, Person> getPersonHashMap(){
@@ -132,7 +133,7 @@ public class DatabaseManager {
         ArrayList<Season> seasons = new ArrayList<>();
         Statement stmt;
         ResultSet resultSet;
-        String query = "SELECT * FROM Activity";
+        String query = "SELECT * FROM Season";
 
         try(Connection con = this.createConnection()){ //Ressource wird automatisch am Ende vom try geschlossen
             //resultSet wird erzeugt

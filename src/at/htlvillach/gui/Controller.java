@@ -2,6 +2,10 @@ package at.htlvillach.gui;
 
 import at.htlvillach.bll.Activity;
 import at.htlvillach.bll.Person;
+import at.htlvillach.bll.Season;
+import at.htlvillach.dal.dao.Dao;
+import at.htlvillach.dal.dao.PersonDBDao;
+import at.htlvillach.dal.dao.SeasonDBDao;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -14,10 +18,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Controller implements Initializable {
     @FXML
@@ -35,16 +37,12 @@ public class Controller implements Initializable {
 
     public void setActivitySet(Set<Activity> activities){
         this.activitySet = activities;
-        ObservableList<Activity> studentFxObservableList;
-        studentFxObservableList = FXCollections.observableList(new ArrayList<>(activities));
-        this.lvActivities.setItems(studentFxObservableList);
+        this.cbSeasons.getSelectionModel().select(0);
+        filterBySeason((Season) cbSeasons.getSelectionModel().getSelectedItem());
     }
 
     public void setPersonSet(Set<Person> people){
         this.personSet = people;
-        ObservableList<Person> studentFxObservableList;
-        studentFxObservableList = FXCollections.observableList(new ArrayList<>(people));
-        this.tvPerson.setItems(studentFxObservableList);
     }
 
     @Override
@@ -57,7 +55,6 @@ public class Controller implements Initializable {
     }
 
     private void configureListView() {
-        //TODO: set standard Activities with standard season
         this.lvActivities.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         this.lvActivities.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
             @Override
@@ -68,19 +65,38 @@ public class Controller implements Initializable {
         });
     }
 
+    private void showAssignedPeople() {
+        if(currentActivity != null){
+            List<Person> people = personSet.stream().filter(person -> { return person.getIdActivity() == currentActivity.getId();}).collect(Collectors.toList());
+
+            ObservableList<Person> studentFxObservableList;
+            studentFxObservableList = FXCollections.observableList(new ArrayList<>(people));
+            this.tvPerson.setItems(studentFxObservableList);
+        } else {
+            this.tvPerson.getItems().clear();
+        }
+    }
+
     private void configureChoices() {
-        //TODO: read shit from DB
+        Dao<Season> daoSeason = new SeasonDBDao();
+        List<Season> seasons = daoSeason.getAll();
+        this.cbSeasons.getItems().addAll(seasons);
+
         this.cbSeasons.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
-            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-                //TODO: set Activity-List with filtered season
+            public void changed(ObservableValue<? extends Number> observableValue, Number oldVal, Number newVal) {
+                Season s = (Season) cbSeasons.getItems().get(newVal.intValue());
+                filterBySeason(s);
             }
         });
     }
 
-    private void showAssignedPeople() {
-        //TODO: read people with assigned activity from DB
-        //TODO: display shit in tableview
+    public void filterBySeason(Season s){
+        List<Activity> activities = activitySet.stream().filter((activity -> { return activity.getIdSeason() == s.getId(); })).collect(Collectors.toList());
+
+        ObservableList<Activity> studentFxObservableList;
+        studentFxObservableList = FXCollections.observableList(activities);
+        lvActivities.setItems(studentFxObservableList);
     }
 
     private void createColumns() {
@@ -103,7 +119,9 @@ public class Controller implements Initializable {
                     Integer.parseInt(t.getNewValue());
                     tvPerson.refresh();
                 }catch (Exception ex){
-                    ((Person) t.getTableView().getItems().get(t.getTablePosition().getRow())).setFirstname(t.getNewValue());
+                    Person currentPerson = ((Person) t.getTableView().getItems().get(t.getTablePosition().getRow()));
+                    currentPerson.setFirstname(t.getNewValue());
+                    currentPerson.update(new PersonDBDao());
                 }
             }
         });
@@ -116,8 +134,9 @@ public class Controller implements Initializable {
                     Integer.parseInt(t.getNewValue());
                     tvPerson.refresh();
                 }catch (Exception ex){
-                    ((Person) t.getTableView().getItems().get(t.getTablePosition().getRow())).setLastname(t.getNewValue());
-                }
+                    Person currentPerson = ((Person) t.getTableView().getItems().get(t.getTablePosition().getRow()));
+                    currentPerson.setLastname(t.getNewValue());
+                    currentPerson.update(new PersonDBDao());}
             }
         });
     }
