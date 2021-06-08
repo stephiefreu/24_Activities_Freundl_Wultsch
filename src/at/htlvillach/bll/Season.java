@@ -3,10 +3,12 @@ package at.htlvillach.bll;
 public class Season {
     private int id;
     private String identifier;
+    private static int largestId = 0;
 
     public Season() { }
 
-    public Season(String identifier) {
+    public Season(int id, String identifier) {
+        setId(id);
         this.identifier = identifier;
     }
 
@@ -19,7 +21,13 @@ public class Season {
     }
 
     public void setId(int id) {
+        if(id > largestId)
+            largestId = id;
         this.id = id;
+    }
+
+    public void setId() {
+        this.id = largestId++;
     }
 
     public void setIdentifier(String identifier) {
