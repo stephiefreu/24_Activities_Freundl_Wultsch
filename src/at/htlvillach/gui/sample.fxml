@@ -10,7 +10,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="at.htlvillach.gui.Controller">
    <top>
       <GridPane BorderPane.alignment="CENTER">
@@ -39,7 +38,7 @@
                   <ChoiceBox fx:id="cbSeasons" prefWidth="150.0" GridPane.columnIndex="1" />
                </children>
             </GridPane>
-            <Label alignment="CENTER" prefHeight="40.0" prefWidth="600.0" text="Label" textFill="MEDIUMSEAGREEN">
+            <Label alignment="CENTER" prefHeight="40.0" prefWidth="600.0" text="Activitymanagement" textFill="MEDIUMSEAGREEN">
                <font>
                   <Font name="Forte" size="36.0" />
                </font>
